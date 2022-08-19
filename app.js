@@ -20,10 +20,10 @@ const campgroundRoutes = require('./routes/campgrounds')
 const reviewRoutes = require('./routes/reviews');
 
 const mongoSanitize = require('express-mongo-sanitize');
-const MongoDBStore = require("connect-mongodb-session")(session);
+const MongoStore = require("connect-mongo");
 
 
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+const dbUrl =  process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
@@ -47,9 +47,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(mongoSanitize());
+app.use(mongoSanitize({
+    replaceWith: '_'
+}));
 
-const secret = process.env.SECRET || 'thisshouldbeabettersecret!'
+const secret = process.env.SECRET ||'thisshouldbeabettersecret!'
 
 const store = new MongoDBStore({ 
     url: dbUrl,
@@ -160,6 +162,6 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 3000
 
-app.listen(port, () => {
+app.listen(3000, () => {
     console.log(`Serving on port ${port}`)
 });
